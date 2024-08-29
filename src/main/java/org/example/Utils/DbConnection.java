@@ -1,4 +1,6 @@
-package org.example;
+package org.example.Utils;
+
+
 
 import com.mongodb.ConnectionString; // Import the ConnectionString class
 import com.mongodb.MongoClientSettings;
@@ -13,12 +15,10 @@ import org.example.Database.Controllers.Users.GetEvents;
 import org.example.UI.Users.Bouquet;
 import org.example.Utils.PhotoOpener;
 
-public class Main {
+public class DbConnection {
 
     public static void main(String[] args) {
         String connectionString = "mongodb+srv://ibouderoua63:QBwjZ1zUXho1Yd0M@cluster0.hriid.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-       // PhotoOpener PhotoOpener = new PhotoOpener("C:\\Users\\ycode\\Downloads\\testp.png");
-       // Bouquet events = new Bouquet();
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
                 .build();
