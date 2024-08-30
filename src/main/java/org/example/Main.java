@@ -10,6 +10,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.example.Database.Controllers.Users.GetEvents;
+import org.example.UI.Admin.AddEventUi;
 import org.example.UI.Users.Bouquet;
 import org.example.Utils.PhotoOpener;
 
@@ -18,7 +19,8 @@ public class Main {
     public static void main(String[] args) {
         String connectionString = "mongodb+srv://ibouderoua63:QBwjZ1zUXho1Yd0M@cluster0.hriid.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
        // PhotoOpener PhotoOpener = new PhotoOpener("C:\\Users\\ycode\\Downloads\\testp.png");
-       // Bouquet events = new Bouquet();
+     Bouquet events = new Bouquet();
+     AddEventUi.main(null);
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
                 .build();

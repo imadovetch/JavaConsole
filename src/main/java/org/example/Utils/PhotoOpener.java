@@ -14,7 +14,9 @@ public class PhotoOpener {
 
     }
     private void Opener(){
-
+        String fileUriString = this.path.replace("\\", "/");
+        String url = "file:///" + fileUriString;
+        System.out.println(url);
         File file = new File(this.path);
 
         if (Desktop.isDesktopSupported()) {
