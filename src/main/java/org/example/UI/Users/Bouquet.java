@@ -9,26 +9,27 @@ import java.util.Map;
 public class Bouquet {
     private String components = "" ;
     public Bouquet() {
-        GetEvents getEvents = new GetEvents();
-        List<Map<String, Object>> events = getEvents.fetchData();
+
+        List<Map<String, Object>> events = (new GetEvents()).fetchData();
 
         StringBuilder names = new StringBuilder();
-        names.append(this.Stringformater("Name"));
+        names.append(this.Stringformater("Name")).append('|');
         StringBuilder locations = new StringBuilder();
-        locations.append(this.Stringformater("location"));
+        locations.append(this.Stringformater("location")).append('|');
         StringBuilder statuses = new StringBuilder();
-        statuses.append(this.Stringformater("status"));
+        statuses.append(this.Stringformater("status")).append('|');
         StringBuilder places = new StringBuilder();
-        places.append(this.Stringformater("place"));
+        places.append(this.Stringformater("place")).append('|');
         StringBuilder ids = new StringBuilder();
-        ids.append(this.Stringformater("id"));
+        ids.append(this.Stringformater("id")).append('|');
         StringBuilder photos = new StringBuilder();
-        photos.append(this.Stringformater("photo"));
+        photos.append(this.Stringformater("photo")).append('|');
 
-        int columns = 4;
+        int columns = 10;
         int index = 0;
 
         for (Map<String, Object> event : events) {
+
             String name ="";
             String location="" ;
             String status ="";
@@ -94,8 +95,6 @@ public class Bouquet {
         components += ids.toString() + "\n";
         components += photos.toString() + "\n";
 
-        // Print the grid to the console
-        System.out.println(components);
     }
 
     private String Stringformater(String x) {
@@ -105,13 +104,13 @@ public class Bouquet {
         }
 
         // Define the maximum length allowed before truncation
-        int maxLength = 19;
+        int maxLength = 30;
 
         if (x.length() > maxLength) {
             x = x.substring(0, maxLength - 2) + "..";
         }
 
-        int totalLength = 21;
+        int totalLength = 32;
 
 
         if (x.length() > maxLength) {

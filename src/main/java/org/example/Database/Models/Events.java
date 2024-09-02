@@ -2,30 +2,31 @@ package org.example.Database.Models;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-
 import com.mongodb.client.MongoClient;
-
 import org.bson.Document;
+import org.example.Database.Controllers.Users.GetEvents;
 import org.example.Utils.DbConnection;
-import org.bson.Document;
+import org.example.Utils.HandleErrors;
 
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Events {
-    private int id;
+
+    protected String id;
     private String name;
     private String location;
     private int places;
     private String photo;
     private String status; // New field
-
+    public static List<Events> eventsList = new ArrayList<>();
     // Default constructor
     public Events() {
     }
 
     // Constructor with parameters
-    public Events(int id, String name, String location, int places, String photo, String status) {
+    public Events(String id, String name, String location, int places, String photo, String status) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -34,13 +35,11 @@ public class Events {
         this.status = status;
     }
 
-    // Getters and setters
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
+
+    // Getters and setters
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -95,13 +94,12 @@ public class Events {
                 '}';
     }
 
-
     public void saveEvent() {
         MongoClient mongoClient = DbConnection.getMongoClient();
         MongoDatabase database = mongoClient.getDatabase("events_db"); // Replace with your actual database name
         MongoCollection<Document> collection = database.getCollection("events");
 
-        Document eventDocument = new Document("id", id)
+        Document eventDocument = new Document("id", UUID.randomUUID().toString())
                 .append("name", name)
                 .append("location", location)
                 .append("places", places)
@@ -113,26 +111,32 @@ public class Events {
     }
 
     public static List<Events> fetcheventsfroDb() {
+        int count = GetEvents.count;
+        int page = GetEvents.page;
         MongoClient mongoClient = DbConnection.getMongoClient();
-        MongoDatabase database = mongoClient.getDatabase("events_db"); // Replace with your actual database name
+        MongoDatabase database = mongoClient.getDatabase("events_db");
         MongoCollection<Document> collection = database.getCollection("events");
 
-        List<Events> eventsList = new ArrayList<>();
-        for (Document doc : collection.find()) {
+        int skipCount = (page - 1) * count;
+
+
+        for (Document doc : collection.find()
+                .skip(skipCount)
+                .limit(count)
+        ) {
             Events event = new Events(
-                    doc.getInteger("id"),
+                    doc.getString("id"),
                     doc.getString("name"),
                     doc.getString("location"),
                     doc.getInteger("places"),
                     doc.getString("photo"),
-                    doc.getString("status") // Added status
+                    doc.getString("status")
             );
             eventsList.add(event);
         }
 
         return eventsList;
     }
-
 
     public static List<Events> parseEventsFromString(String eventsString) {
         List<Events> eventsList = new ArrayList<>();
@@ -141,7 +145,7 @@ public class Events {
         for (String eventStr : eventStrings) {
             eventStr = eventStr.replace("{", "").replace("}", "").replace("\"", "");
             String[] details = eventStr.split(",");
-            int id = Integer.parseInt(details[0].split(":")[1].trim());
+            String id = details[0].split(":")[1].trim();
             String name = details[1].split(":")[1].trim();
             String location = details[2].split(":")[1].trim();
             int places = Integer.parseInt(details[3].split(":")[1].trim());
@@ -153,5 +157,35 @@ public class Events {
         }
 
         return eventsList;
+    }
+    public static boolean Inscrire(String userID, String eventID) {
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> collection = database.getCollection("Inscriptions");
+
+        if (CheckInscriptionExist(userID, eventID)) {
+            HandleErrors.DisplayError("Inscription already exists.");
+
+            return false;
+        }
+
+        Document newInscription = new Document("userID", userID)
+                .append("eventID", eventID);
+        collection.insertOne(newInscription);
+
+        HandleErrors.DisplayError("Inscription added successfully.");
+        return true;
+    }
+
+    private static boolean CheckInscriptionExist(String userID, String eventID) {
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> collection = database.getCollection("Inscriptions");
+
+        Document query = new Document("userID", userID)
+                .append("eventID", eventID);
+
+        long count = collection.countDocuments(query);
+        return count > 0;
     }
 }

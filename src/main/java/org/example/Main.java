@@ -1,43 +1,31 @@
 package org.example;
 
-import com.mongodb.ConnectionString; // Import the ConnectionString class
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoException;
-import com.mongodb.ServerApi;
-import com.mongodb.ServerApiVersion;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-import org.example.Database.Controllers.Users.GetEvents;
+
+import org.example.Database.Controllers.Users.ConnectTest;
 import org.example.UI.Admin.AddEventUi;
+import org.example.UI.Home.AuthUI;
 import org.example.UI.Users.Bouquet;
+import org.example.UI.Users.BouquetConsole;
+import org.example.Utils.DbConnection;
 import org.example.Utils.PhotoOpener;
+
+
 
 public class Main {
 
-    public static void main(String[] args) {
-        String connectionString = "mongodb+srv://ibouderoua63:QBwjZ1zUXho1Yd0M@cluster0.hriid.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-       // PhotoOpener PhotoOpener = new PhotoOpener("C:\\Users\\ycode\\Downloads\\testp.png");
-     Bouquet events = new Bouquet();
-     AddEventUi.main(null);
-        ServerApi serverApi = ServerApi.builder()
-                .version(ServerApiVersion.V1)
-                .build();
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyConnectionString(new ConnectionString(connectionString))
-                .serverApi(serverApi)
-                .build();
+    public Main(){
 
-        try (MongoClient mongoClient = MongoClients.create(settings)) {
-            try {
-                // Send a ping to confirm a successful connection
-                MongoDatabase database = mongoClient.getDatabase("admin");
-                database.runCommand(new Document("ping", 1));
-                System.out.println("Pinged your deployment. You successfully connected to MongoDB!");
-            } catch (MongoException e) {
-                e.printStackTrace();
-            }
-        }
+    }
+    public static void main(String[] args) {
+
+       // PhotoOpener PhotoOpener = new PhotoOpener("C:\\Users\\ycode\\Downloads\\testp.png");
+//    while(true){
+   new AuthUI().DisplayUI();
+       // new Bouquet();
+   // new BouquetConsole();
+//       // new ConnectTest();
+//    AddEventUi.main(null);
+//    }
+
     }
 }
