@@ -15,17 +15,18 @@ public class AuthController {
             }
 
 
-    public   int register(){
-                Users.register(this.email, this.password);
-        return 1;
-    }
-    public boolean login(){
+            public   int register(){
+                        Users.register(this.email, this.password);
+                return 1;
+            }
+            public boolean login(){
 
-        if(Users.login(this.email, this.password)){
-            return true;
-        };
-        return false;
-    }
+                if(Users.login(this.email, this.password)){
+
+                    return true;
+                };
+                return false;
+            }
 
 
 }

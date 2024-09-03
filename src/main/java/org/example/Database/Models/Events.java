@@ -3,7 +3,9 @@ package org.example.Database.Models;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
+import org.example.Database.Controllers.AuthController;
 import org.example.Database.Controllers.Users.GetEvents;
 import org.example.Utils.DbConnection;
 import org.example.Utils.HandleErrors;
@@ -188,4 +190,70 @@ public class Events {
         long count = collection.countDocuments(query);
         return count > 0;
     }
+
+    public static List<Events> GetInscriptions() {
+        List<Events> eventsList = new ArrayList<>();
+
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> inscriptionCollection = database.getCollection("Inscriptions");
+
+
+        List<String> eventIds = new ArrayList<>();
+        for (Document doc : inscriptionCollection.find(new Document("userID", AuthController.userid))) {
+            eventIds.add(doc.getString("eventID"));
+        }
+
+
+        MongoCollection<Document> eventsCollection = database.getCollection("events");
+        for (String eventId : eventIds) {
+            Document eventDoc = eventsCollection.find(new Document("id", eventId)).first();
+            if (eventDoc != null) {
+                Events event = new Events(
+                        eventDoc.getString("id"),
+                        eventDoc.getString("name"),
+                        eventDoc.getString("location"),
+                        eventDoc.getInteger("places"),
+                        eventDoc.getString("photo"),
+                        eventDoc.getString("status")
+                );
+                eventsList.add(event);
+            }
+        }
+
+        return eventsList;
+    }
+    public static void InscriptionCancel(String eventId){
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> inscriptionCollection = database.getCollection("Inscriptions");
+
+
+        Document filter = new Document("eventID", eventId)
+                .append("userID", AuthController.userid);
+
+        // Delete the inscription from the collection
+        inscriptionCollection.deleteOne(filter);
+
+        System.out.println("Inscription canceled for event ID: " + eventId);
+
+    }
+    public static void Delete(String id){
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> eventsCollection = database.getCollection("events");
+
+        Document filter = new Document("id", id);
+
+        DeleteResult result = eventsCollection.deleteOne(filter);
+
+        if (result.getDeletedCount() > 0) {
+            System.out.println("Event with ID " + id + " has been deleted.");
+        } else {
+            System.out.println("No event found with ID " + id + ".");
+        }
+
+
+    }
+
 }

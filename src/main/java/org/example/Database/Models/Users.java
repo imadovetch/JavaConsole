@@ -3,15 +3,25 @@ package org.example.Database.Models;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoClient;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.example.Database.Controllers.AuthController;
 import org.example.Utils.DbConnection;
 import org.example.Utils.HandleErrors;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Users {
     public static String Role;
+    public  String password;
+    public  String email;
+    public Users(String email,String password){
+        this.password = password;
+        this.email = email;
+    }
     public static void register(String email, String password) {
         MongoClient mongoClient = DbConnection.getMongoClient();
         MongoDatabase database = mongoClient.getDatabase("events_db");
@@ -57,6 +67,7 @@ public class Users {
                 HandleErrors.DisplayError("Login successful.");
 
                 AuthController.userid = userDoc.getString("id");
+
                 return true;
             }
 
@@ -64,6 +75,77 @@ public class Users {
         HandleErrors.DisplayError("Email or password does not match.");
         HandleErrors.Status = false;
         return false;
+    }
+    public static void modifyUserProfile(String newPassword) {
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> userCollection = database.getCollection("users");
+
+        Document filter = new Document("id", AuthController.userid);
+        Document update = new Document("$set", new Document("password", newPassword));
+
+
+        UpdateResult result = userCollection.updateOne(filter, update);
+
+
+        if (result.getMatchedCount() > 0) {
+            System.out.println("Password has been updated.");
+        } else {
+            System.out.println("No matching user found. Password was not updated.");
+        }
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public static void Delete(String email){
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> eventsCollection = database.getCollection("users");
+
+        Document filter = new Document("email", email);
+
+        DeleteResult result = eventsCollection.deleteOne(filter);
+
+        if (result.getDeletedCount() > 0) {
+            System.out.println("User with email " + email + " has been deleted.");
+        } else {
+            System.out.println("No event found with ID " + email + ".");
+        }
+
+
+    }
+
+    public static List<Users> fetchUsers() {
+        try{
+            List<Users> fetchedUsers = new ArrayList<>();
+
+            MongoClient mongoClient = DbConnection.getMongoClient();
+            MongoDatabase database = mongoClient.getDatabase("events_db");
+            MongoCollection<Document> usersCollection = database.getCollection("users");
+
+            for (Document doc : usersCollection.find()) {
+
+                Users user = new Users(
+                        doc.getString("email"),
+                        doc.getString("password")
+                );
+                fetchedUsers.add(user);
+            }
+
+
+            return fetchedUsers;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+
     }
 
 }

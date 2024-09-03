@@ -8,7 +8,17 @@ import java.util.Map;
 
 public class Bouquet {
     private String components = "" ;
-    public Bouquet() {
+    private static Bouquet instance;
+
+
+
+    public static Bouquet getInstance() {
+        if (instance == null) {
+            instance = new Bouquet();
+        }
+        return instance;
+    }
+    public void DisplayBuquet() {
 
         List<Map<String, Object>> events = (new GetEvents()).fetchData();
 
@@ -95,15 +105,15 @@ public class Bouquet {
         components += ids.toString() + "\n";
         components += photos.toString() + "\n";
 
+        System.out.println(components);
     }
 
     private String Stringformater(String x) {
-        // Ensure x is not null
+
         if (x == null) {
             return "   null   ";
         }
 
-        // Define the maximum length allowed before truncation
         int maxLength = 30;
 
         if (x.length() > maxLength) {

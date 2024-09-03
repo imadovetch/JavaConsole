@@ -1,6 +1,7 @@
 package org.example.UI.Home;
 
 import org.example.Database.Controllers.AuthController;
+import org.example.UI.Admin.AdminMainUi;
 import org.example.UI.Users.UserMainUi;
 import org.example.Utils.HandleErrors;
 
@@ -37,7 +38,8 @@ public class AuthUI {
                     this.scan();
                     if(new AuthController(this.email, this.password).login()){
 
-                        UserMainUi.main(null);
+                       // UserMainUi.main(null);
+                        AdminMainUi.DisplayUI();
                     };
                     break;
                 case "3":

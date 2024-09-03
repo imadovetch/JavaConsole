@@ -11,7 +11,7 @@ public class BouquetConsole {
 
     public BouquetConsole() {
         String input;
-        new Bouquet();
+        Bouquet.getInstance().DisplayBuquet();
         while (true) {
             System.out.print("Enter your choice (1, 2, 3, 4, >, <, quit): ");
             input = scanner.nextLine().trim();
@@ -36,12 +36,12 @@ public class BouquetConsole {
                 case ">":
                     System.out.println("You chose next.");
                     GetEvents.page++;
-                    new Bouquet();
+                    Bouquet.getInstance().DisplayBuquet();
                     break;
                 case "<":
                     System.out.println("You chose previous.");
                     GetEvents.page--;
-                    new Bouquet();
+                    Bouquet.getInstance().DisplayBuquet();
                     break;
                 case "quit":
                     System.out.println("Exiting...");
@@ -55,10 +55,12 @@ public class BouquetConsole {
     }
 
     public void EventsOP(int Eventid) {
-        new Bouquet();
-        while (true) {
+        Bouquet.getInstance().DisplayBuquet();
+        boolean status = true;
+        while (status) {
             System.out.print("1. To see event Description");
             System.out.print("2. Inscrire event");
+            System.out.print("3. quit");
             String input = scanner.nextLine().trim();
 
             switch (input) {
@@ -78,6 +80,10 @@ public class BouquetConsole {
                         System.out.println("Invalid event index.");
                     }
 
+                    break;
+                case "quit":
+                    Bouquet.getInstance().DisplayBuquet();
+                    status = false;
                     break;
                 default:
                     System.out.println("Invalid input. Please enter 1 or 2.");
