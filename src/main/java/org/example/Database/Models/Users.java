@@ -62,6 +62,7 @@ public class Users {
 
         if (userDoc != null) {
             String hashedPassword = userDoc.getString("password");
+            Role = userDoc.getString("role");
 
             if(password.equals(hashedPassword)){
                 HandleErrors.DisplayError("Login successful.");

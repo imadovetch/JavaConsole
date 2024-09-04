@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static org.example.Database.Models.Events.GetALLInscriptions;
+
 public class AdminMainUi {
     private static Scanner scanner = new Scanner(System.in);
 
     private static List<Users> dummyUsers = Users.fetchUsers();
-    private static List<Events> dummyEvents = Events.fetcheventsfroDb();
 
 
     public static void DisplayUI() {
@@ -48,7 +49,10 @@ public class AdminMainUi {
     private static void manageEvents() {
         System.out.println("Manage Events:");
         System.out.println("1. Show Events");
-        System.out.println("2. Delete Event");
+        System.out.println("2. Add Events");
+        System.out.println("3. Modify Events");
+        System.out.println("S. To see stats");
+        System.out.println("4. Delete Event");
         System.out.print("Enter your choice: ");
         String choice = scanner.nextLine().trim();
 
@@ -57,7 +61,16 @@ public class AdminMainUi {
                 showEvents();
                 break;
             case "2":
+                AddEventUi.main(null);
+                break;
+            case "3":
+                ModifyEvent();
+                break;
+            case "4":
                 deleteEvent();
+                break;
+            case "S":
+//                ShowStats();
                 break;
             default:
                 System.out.println("Invalid choice.");
@@ -66,6 +79,7 @@ public class AdminMainUi {
     }
 
     private static void showEvents() {
+        List<Events> dummyEvents = Events.fetcheventsfroDb();
         System.out.println("Events:");
         for (Events event : dummyEvents) {
             System.out.println("ID: " + event.getId());
@@ -79,12 +93,59 @@ public class AdminMainUi {
     }
 
     private static void deleteEvent() {
+        List<Events> dummyEvents = Events.fetcheventsfroDb();
+
         System.out.print("Enter the ID of the event to delete: ");
         String id = scanner.nextLine().trim();
         Events.Delete(id);
         dummyEvents.removeIf(event -> event.getId().equals(id));
 
     }
+    private static void ModifyEvent() {
+        List<Events> dummyEvents = Events.fetcheventsfroDb();
+
+        System.out.print("Enter the ID of the event to modify: ");
+        String id = scanner.nextLine().trim();
+
+
+        Events eventToModify = null;
+        for (Events event : dummyEvents) {
+            if (event.getId().equals(id)) {
+                eventToModify = event;
+                break;
+            }
+        }
+
+        if (eventToModify != null) {
+            System.out.print("Enter new name (current: " + eventToModify.getName() + "): ");
+            String newName = scanner.nextLine().trim();
+
+            System.out.print("Enter new location (current: " + eventToModify.getLocation() + "): ");
+            String newLocation = scanner.nextLine().trim();
+
+            System.out.print("Enter new number of places (current: " + eventToModify.getPlaces() + "): ");
+            int newPlaces = Integer.parseInt(scanner.nextLine().trim());
+
+            System.out.print("Enter new photo path (current: " + eventToModify.getPhoto() + "): ");
+            String newPhoto = scanner.nextLine().trim();
+
+            System.out.print("Enter new status (current: " + eventToModify.getStatus() + "): ");
+            String newStatus = scanner.nextLine().trim();
+
+            eventToModify.setName(newName);
+            eventToModify.setLocation(newLocation);
+            eventToModify.setPlaces(newPlaces);
+            eventToModify.setPhoto(newPhoto);
+            eventToModify.setStatus(newStatus);
+
+            Events.Updateevent(eventToModify);
+
+            System.out.println("Event updated successfully.");
+        } else {
+            System.out.println("Event with the given ID not found.");
+        }
+    }
+
 
     private static void manageClients() {
         System.out.println("Manage Clients:");
@@ -132,7 +193,7 @@ public class AdminMainUi {
 
         switch (choice) {
             case "1":
-//                showInscriptions();
+                showInscriptions();
                 break;
             case "2":
                 cancelInscription();
@@ -143,22 +204,29 @@ public class AdminMainUi {
         }
     }
 
-//    private static void showInscriptions() {
-//        System.out.println("Inscriptions:");
-//
-//        List<EventInscription> inscriptions = new ArrayList<>();
-//        for (EventInscription inscription : inscriptions) {
-//            System.out.println("Email: " + inscription.getEmail());
-//            System.out.println("Event Name: " + inscription.getEventName());
-//            System.out.println("Event ID: " + inscription.getEventId());
-//            System.out.println("---------------------------");
-//        }
-//    }
+    private static void showInscriptions() {
+        System.out.println("Inscriptions:");
+
+        List<EventInscription> inscriptions = GetALLInscriptions();
+        if (inscriptions.isEmpty()) {
+            System.out.println("No inscriptions found.");
+        } else {
+            for (EventInscription inscription : inscriptions) {
+                System.out.println("User ID: " + inscription.userid + ", Event ID: " + inscription.eventid);
+            }
+        }
+    }
 
     private static void cancelInscription() {
-        System.out.print("Enter the event ID of the inscription to cancel: ");
+        System.out.print("Enter the event ID and userid ");
         String eventId = scanner.nextLine().trim();
+        String userid = scanner.nextLine().trim();
+        Events.InscriptionCancel(userid,eventId);
+    }
+    public void ShowStats(){
+        System.out.println("Stats:");
 
-        System.out.println("Inscription with event ID " + eventId + " has been canceled.");
+//        Events.GetStats();
+//        Users.Getstats();
     }
 }

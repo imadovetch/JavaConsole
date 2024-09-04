@@ -34,13 +34,13 @@ public class AddEventUi {
         int places = getPlaces();
         event.put("places", places);
 
-        String photo = uploadPhoto();
+        String photo = getDate();
         event.put("photo", photo);
 
         String status = getStatus();
         event.put("status", status);
 
-        // Pass the event data to the controller
+
         controller.addEventToDatabase(event);
     }
 
@@ -52,6 +52,21 @@ public class AddEventUi {
                 return name;
             } else {
                 System.out.println("Event name cannot be empty! Please try again.");
+            }
+        }
+    }
+    private String getDate() {
+        Scanner scanner = new Scanner(System.in);
+        String datePattern = "\\d{4}/\\d{2}/\\d{2}";
+
+        while (true) {
+            System.out.println("Enter event date (format: yyyy/mm/dd):");
+            String date = scanner.nextLine();
+
+            if (date.matches(datePattern)) {
+                return date;
+            } else {
+                System.out.println("Invalid date format! Please enter the date in the format yyyy/mm/dd.");
             }
         }
     }

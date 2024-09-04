@@ -12,19 +12,14 @@ public class GetEvents {
     public static  int Currentid ;
 
     public static List<Events> storedEvents = new ArrayList<>();
-
-    public String getUuidById(String id) {
-        for (Events event : storedEvents) {
-            if (event.getId().equals(id)) {
-                return event.getId();
-            }
-        }
-        return null;
+    public List<Events> eventsList;
+    public  GetEvents() {
+        this.eventsList = null;
     }
-    public List<Map<String, Object>> fetchData() {
+    public List<Events> fetchData() {
 
         Events eventsModel = new Events();
-        List<Events> eventsList = eventsModel.fetcheventsfroDb();
+        eventsList = eventsModel.fetcheventsfroDb();
 
         List<Map<String, Object>> result = new ArrayList<>();
         int count = 1;
@@ -39,12 +34,10 @@ public class GetEvents {
             eventMap.put("photo", event.getPhoto());
             result.add(eventMap);
             count++;
-//            System.out.println("h");
-//            System.out.println(event.getId());
            this.StockFetcheddata(event);
         }
         count = 0;
-        return result;
+        return eventsList;
     }
 
 
@@ -52,8 +45,6 @@ public class GetEvents {
         storedEvents.add(event);
     }
 
-    public List<Events> getStoredEvents() {
-        return storedEvents;
-    }
+
 
 }

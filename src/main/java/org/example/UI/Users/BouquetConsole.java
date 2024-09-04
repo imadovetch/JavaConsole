@@ -12,27 +12,14 @@ public class BouquetConsole {
     public BouquetConsole() {
         String input;
         Bouquet.getInstance().DisplayBuquet();
-        while (true) {
-            System.out.print("Enter your choice (1, 2, 3, 4, >, <, quit): ");
+        boolean stop = true;
+        while (stop) {
+            System.out.print("Enter Eventid UUID To manage it  or > , <, quit): \n");
             input = scanner.nextLine().trim();
 
             switch (input) {
-                case "1":
-                    System.out.println("You chose option 1.");
-                    this.EventsOP(1);
-                    break;
-                case "2":
-                    System.out.println("You chose option 2.");
-                    this.EventsOP(2);
-                    break;
-                case "3":
-                    System.out.println("You chose option 3.");
-                    this.EventsOP(3);
-                    break;
-                case "4":
-                    System.out.println("You chose option 4.");
-                    this.EventsOP(4);
-                    break;
+
+
                 case ">":
                     System.out.println("You chose next.");
                     GetEvents.page++;
@@ -45,17 +32,31 @@ public class BouquetConsole {
                     break;
                 case "quit":
                     System.out.println("Exiting...");
-                    scanner.close();
-                    return; // Exit the main method
+
+                    stop = false;
                 default:
-                    System.out.println("Invalid input. Please enter 1, 2, 3, 4, >, <, or quit.");
+
+
+                        Events event = null;
+                        for (Events e : Events.eventsList) {
+                            if (e.getId().equals(input)) {
+                                event = e;
+                                break;
+                            }
+                        }
+
+                        if (event != null) {
+                            this.EventsOP(input);
+                        } else {
+                            System.out.println(" Please enter A valid id ");
+                        }
+
                     break;
             }
         }
     }
 
-    public void EventsOP(int Eventid) {
-        Bouquet.getInstance().DisplayBuquet();
+    public void EventsOP(String Eventid) {
         boolean status = true;
         while (status) {
             System.out.print("1. To see event Description");
@@ -66,23 +67,16 @@ public class BouquetConsole {
             switch (input) {
                 case "1":
                     System.out.println("You chose option 1.");
-                    // Assuming input is a number, parse it to an integer
 
 
                     break;
                 case "2":
-                    int index = Integer.parseInt(input);
-                    Events event = Events.eventsList.get(index - 1);
-                    if (index > 0 && index <= Events.eventsList.size()) {
-                        Events.Inscrire(AuthController.userid, event.getId());
 
-                    } else {
-                        System.out.println("Invalid event index.");
-                    }
+                        Events.Inscrire(AuthController.userid, Eventid);
 
                     break;
                 case "quit":
-                    Bouquet.getInstance().DisplayBuquet();
+
                     status = false;
                     break;
                 default:

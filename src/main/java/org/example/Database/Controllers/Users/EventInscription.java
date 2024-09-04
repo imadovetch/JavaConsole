@@ -1,10 +1,27 @@
 package org.example.Database.Controllers.Users;
 
+import org.example.Database.Controllers.AuthController;
 import org.example.Database.Models.Events;
 import java.util.List;
 import java.util.Scanner;
 
 public class EventInscription {
+    public String userid;
+    public String eventid;
+    public String eventname;
+
+    public EventInscription(String userID, String eventID) {
+        this.userid = userID;
+        this.eventid = eventID;
+    }
+
+    public String getEventid() {
+        return eventid;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
 
     public static void DisplayInscriptions() {
         List<Events> inscriptionEvents = Events.GetInscriptions();
@@ -26,18 +43,30 @@ public class EventInscription {
 
             Scanner scanner = new Scanner(System.in);
             System.out.print("Enter the number of the inscription to cancel: ");
-            int choice = scanner.nextInt();
+            String choice = scanner.nextLine();
+            switch (choice){
+                case "quit":
+                    break;
+                default:
+                    try{
 
-            if (choice > 0 && choice <= inscriptionEvents.size()) {
-                Events selectedEvent = inscriptionEvents.get(choice - 1);
-                CancelInscription(selectedEvent);
-            } else {
-                System.out.println("Invalid choice. Please enter a valid number.");
+                    int x = Integer.parseInt(choice);
+                    if (x > 0 && x <= inscriptionEvents.size()) {
+                        Events selectedEvent = inscriptionEvents.get(x - 1);
+                        CancelInscription(selectedEvent);
+                    } else {
+                        System.out.println("Invalid choice. Please enter a valid number.");
+                    }
+                    }catch (Exception e){
+                        System.out.println("Pls enter a number or quit");
+                    }
+
             }
+
         }
     }
 
     public static void CancelInscription(Events event) {
-       Events.InscriptionCancel(event.getId());
+       Events.InscriptionCancel(event.getId(), AuthController.userid);
     }
 }
