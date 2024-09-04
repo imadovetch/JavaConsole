@@ -61,15 +61,25 @@ public class AuthUI {
 
 
     }
-    private  void scan(){
+    private void scan() {
         Scanner scanner = new Scanner(System.in);
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
-        System.out.print("Enter your email: ");
-         this.email = scanner.nextLine().trim();
+        while (true) {
+            System.out.print("Enter your email: ");
+            this.email = scanner.nextLine().trim();
+
+            if (this.email.matches(emailRegex)) {
+                break;
+            } else {
+                System.out.println("Invalid email format! Please enter a valid email.");
+            }
+        }
+
         System.out.print("Enter your password: ");
-         this.password = scanner.nextLine().trim();
-
+        this.password = scanner.nextLine().trim();
     }
+
     public  void asci(){
         System.out.println("                                                                                                              \n" +
                 "         eeeeeeeeeeee    vvvvvvv           vvvvvvv    eeeeeeeeeeee    nnnn  nnnnnnnn    ttttttt:::::ttttttt         \n" +

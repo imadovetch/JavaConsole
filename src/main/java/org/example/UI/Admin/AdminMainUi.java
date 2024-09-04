@@ -70,7 +70,7 @@ public class AdminMainUi {
                 deleteEvent();
                 break;
             case "S":
-//                ShowStats();
+                ShowStats();
                 break;
             default:
                 System.out.println("Invalid choice.");
@@ -223,10 +223,10 @@ public class AdminMainUi {
         String userid = scanner.nextLine().trim();
         Events.InscriptionCancel(userid,eventId);
     }
-    public void ShowStats(){
+    public static void ShowStats(){
         System.out.println("Stats:");
 
-//        Events.GetStats();
-//        Users.Getstats();
+          Events.GetStats();
+           Users.GetStats();
     }
 }

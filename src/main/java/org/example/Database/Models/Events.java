@@ -1,9 +1,6 @@
 package org.example.Database.Models;
 
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoClient;
+import com.mongodb.client.*;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.example.Database.Controllers.AuthController;
@@ -12,6 +9,7 @@ import org.example.Database.Controllers.Users.GetEvents;
 import org.example.Utils.DbConnection;
 import org.example.Utils.HandleErrors;
 
+import java.util.Collections;
 import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,21 +20,21 @@ public class Events {
     private String name;
     private String location;
     private int places;
-    private String photo; // type
-    private String status; // date
+    private String type; // type
+    private String date; // date
     public static List<Events> eventsList = new ArrayList<>();
 
     public Events() {
     }
 
 
-    public Events(String id, String name, String location, int places, String photo, String status) {
+    public Events(String id, String name, String location, int places, String type, String date) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.places = places;
-        this.photo = photo;
-        this.status = status;
+        this.type = type;
+        this.date = date;
     }
 
     public static void Updateevent(Events eventToModify) {
@@ -49,8 +47,8 @@ public class Events {
                 .append("name", eventToModify.getName())
                 .append("location", eventToModify.getLocation())
                 .append("places", eventToModify.getPlaces())
-                .append("photo", eventToModify.getPhoto())
-                .append("status", eventToModify.getStatus()));
+                .append("type", eventToModify.getPhoto())
+                .append("date", eventToModify.getStatus()));
 
         collection.updateOne(filter, update);
         System.out.println("Event updated in MongoDB: " + eventToModify);
@@ -77,6 +75,36 @@ public class Events {
             return inscriptionsList;
         }
 
+    public static void GetStats() {
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> eventsCollection = database.getCollection("events");
+
+        long totalEvents = eventsCollection.countDocuments();
+
+        System.out.println("Event Statistics:");
+        System.out.println("-----------------");
+        System.out.println("Total number of events: " + totalEvents);
+
+        Document statusGroup = new Document("$group", new Document("_id", "type").append("count", new Document("$sum", 1)));
+        AggregateIterable<Document> statusStats = eventsCollection.aggregate(Collections.singletonList(statusGroup));
+
+        System.out.println("\nEvents by status:");
+        for (Document doc : statusStats) {
+            System.out.println("Status: " + doc.getString("_id") + " - Count: " + doc.getInteger("count"));
+        }
+
+        // Example: Counting events by location
+        Document locationGroup = new Document("$group", new Document("_id", "$location").append("count", new Document("$sum", 1)));
+        AggregateIterable<Document> locationStats = eventsCollection.aggregate(Collections.singletonList(locationGroup));
+
+        System.out.println("\nEvents by location:");
+        for (Document doc : locationStats) {
+            System.out.println("Location: " + doc.getString("_id") + " - Count: " + doc.getInteger("count"));
+        }
+
+    }
+
 
 
     public void saveEvent() {
@@ -88,8 +116,8 @@ public class Events {
                 .append("name", name)
                 .append("location", location)
                 .append("places", places)
-                .append("photo", photo)
-                .append("status", status); // Added status
+                .append("type", type)
+                .append("date", date); // Added date
 
         collection.insertOne(eventDocument);
         System.out.println("Event saved to MongoDB: " + toString());
@@ -114,8 +142,8 @@ public class Events {
                     doc.getString("name"),
                     doc.getString("location"),
                     doc.getInteger("places"),
-                    doc.getString("photo"),
-                    doc.getString("status")
+                    doc.getString("type"),
+                    doc.getString("date")
             );
 
             eventsList.add(event);
@@ -179,8 +207,8 @@ public class Events {
                         eventDoc.getString("name"),
                         eventDoc.getString("location"),
                         eventDoc.getInteger("places"),
-                        eventDoc.getString("photo"),
-                        eventDoc.getString("status")
+                        eventDoc.getString("type"),
+                        eventDoc.getString("date")
                 );
                 eventsList.add(event);
             }
@@ -273,19 +301,19 @@ public class Events {
     }
 
     public String getPhoto() {
-        return photo;
+        return type;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhoto(String type) {
+        this.type = type;
     }
 
     public String getStatus() {
-        return status;
+        return date;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatus(String date) {
+        this.date = date;
     }
 
     @Override
@@ -295,8 +323,8 @@ public class Events {
                 ", name='" + name + '\'' +
                 ", location='" + location + '\'' +
                 ", places=" + places +
-                ", photo='" + photo + '\'' +
-                ", status='" + status + '\'' + // Include status
+                ", type='" + type + '\'' +
+                ", date='" + date + '\'' + // Include date
                 '}';
     }
 

@@ -1,5 +1,6 @@
 package org.example.Database.Models;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoClient;
@@ -11,6 +12,7 @@ import org.example.Utils.DbConnection;
 import org.example.Utils.HandleErrors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +97,44 @@ public class Users {
             System.out.println("No matching user found. Password was not updated.");
         }
     }
+
+    public static void GetStats() {
+        MongoClient mongoClient = DbConnection.getMongoClient();
+        MongoDatabase database = mongoClient.getDatabase("events_db");
+        MongoCollection<Document> usersCollection = database.getCollection("users");
+
+        long totalUsers = usersCollection.countDocuments();
+
+        System.out.println("User Statistics:");
+        System.out.println("----------------");
+        System.out.println("Total number of users: " + totalUsers);
+
+        Document roleGroup = new Document("$group", new Document("_id", "$role").append("count", new Document("$sum", 1)));
+        AggregateIterable<Document> roleStats = usersCollection.aggregate(Collections.singletonList(roleGroup));
+
+        System.out.println("\nUsers by role:");
+        for (Document doc : roleStats) {
+            System.out.println("Role: " + doc.getString("_id") + " - Count: " + doc.getInteger("count"));
+        }
+
+        Document statusGroup = new Document("$group", new Document("_id", "$status").append("count", new Document("$sum", 1)));
+        AggregateIterable<Document> statusStats = usersCollection.aggregate(Collections.singletonList(statusGroup));
+
+        System.out.println("\nUsers by status:");
+        for (Document doc : statusStats) {
+            System.out.println("Status: " + "active" + " - Count: " + doc.getInteger("count"));
+        }
+
+        Document countryGroup = new Document("$group", new Document("_id", "$country").append("count", new Document("$sum", 1)));
+        AggregateIterable<Document> countryStats = usersCollection.aggregate(Collections.singletonList(countryGroup));
+
+        System.out.println("\nUsers by country:");
+        for (Document doc : countryStats) {
+            System.out.println("Country: " + "morocco" + " - Count: " + doc.getInteger("count"));
+        }
+
+    }
+
 
     public String getEmail() {
         return email;

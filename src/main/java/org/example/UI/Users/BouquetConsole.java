@@ -60,14 +60,18 @@ public class BouquetConsole {
         boolean status = true;
         while (status) {
             System.out.print("1. To see event Description");
-            System.out.print("2. Inscrire event");
-            System.out.print("3. quit");
+            System.out.print(" 2. Inscrire event");
+            System.out.print(" 3. quit");
             String input = scanner.nextLine().trim();
 
             switch (input) {
                 case "1":
                     System.out.println("You chose option 1.");
-
+                    for (Events e : Events.eventsList) {
+                        if (e.getId().equals(Eventid)) {
+                            System.out.println("The event will take place at " + e.getLocation() + " with a capacity of " + e.getPlaces() + " attendees. The current status of the event is: " + e.getStatus() + ".");
+                        }
+                    }
 
                     break;
                 case "2":
